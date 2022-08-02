@@ -5,9 +5,9 @@ function newId(array) {
     return 1;
   }
 }
-
 import fs from "fs";
 import path from "path";
+
 class MessageApp {
   constructor(filepath) {
     this.filepath = filepath;
@@ -22,23 +22,26 @@ class MessageApp {
       date: new Date(),
     };
     this.messages.push(item);
+    this.writeToJson();
     return this.messages;
   }
 
   // get a message
   get(id) {
-    return this.messages.filter((message) => message.id === id)[0];
+    return this.messages.filter((message) => message.id == id)[0];
   }
 
   // update a message
   update(id, update) {
-    let index = this.messages.findIndex((message) => message.id === id);
+    let index = this.messages.findIndex((message) => message.id == id);
+    this.writeToJson();
     this.messages[index].content = update;
   }
 
   // delete a message
   delete(id) {
     this.messages = this.messages.filter((message) => message.id != id);
+    this.writeToJson();
     return this.messages;
   }
 
@@ -52,6 +55,19 @@ class MessageApp {
         }
       )
     );
+  }
+
+  writeToJson() {
+    if (this.filepath) {
+      const jsonItem = JSON.stringify(this.messages);
+      fs.writeFileSync(
+        __dirname + path.normalize(this.filepath),
+        jsonItem,
+        (err) => {
+          if (err) throw err;
+        }
+      );
+    }
   }
 }
 
